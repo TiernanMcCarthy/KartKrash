@@ -6,11 +6,21 @@ using Fusion.Addons.Physics;
 using Fusion.Sockets;
 using System;
 using UnityEngine.SceneManagement;
+using Random = UnityEngine.Random;
 
 public class GameSpawner : MonoBehaviour, INetworkRunnerCallbacks
 {
     //Manages simulation and player input
     private NetworkRunner _runner;
+    
+    
+    private PlayerInputManager playerInput;
+
+
+    private void Start()
+    {
+        playerInput=gameObject.AddComponent<PlayerInputManager>();
+    }
 
     private void OnGUI()
     {
@@ -30,7 +40,11 @@ public class GameSpawner : MonoBehaviour, INetworkRunnerCallbacks
     async void StartGame(GameMode mode)
     {
         // Create the Fusion runner and let it know that we will be providing user input
-        _runner = gameObject.AddComponent<NetworkRunner>();
+        _runner = gameObject.GetComponent<NetworkRunner>();
+        if (_runner == null)
+        {
+            _runner = gameObject.AddComponent<NetworkRunner>();
+        }
         var runnerSimulatePhysics3D = gameObject.AddComponent<RunnerSimulatePhysics3D>();
         runnerSimulatePhysics3D.ClientPhysicsSimulation = ClientPhysicsSimulation.SimulateAlways;
         _runner.ProvideInput = true;
@@ -60,12 +74,21 @@ public class GameSpawner : MonoBehaviour, INetworkRunnerCallbacks
         if (runner.IsServer)
         {
             // Create a unique position for the player
-            Vector3 spawnPosition = new Vector3(0,5,0);
+            Vector3 spawnPosition = new Vector3(Random.Range(0, 50),5,0);
+
+
+            
             NetworkObject networkPlayerObject = runner.Spawn(_playerPrefab, spawnPosition, Quaternion.identity, player);
             // Keep track of the player avatars for easy access
             _spawnedCharacters.Add(player, networkPlayerObject);
         }
     }
+
+    private void Update()
+    {
+        
+    }
+
     public void OnPlayerLeft(NetworkRunner runner, PlayerRef player)
     {
         if (_spawnedCharacters.TryGetValue(player, out NetworkObject networkObject))
@@ -74,7 +97,15 @@ public class GameSpawner : MonoBehaviour, INetworkRunnerCallbacks
             _spawnedCharacters.Remove(player);
         }
     }
-    public void OnInput(NetworkRunner runner, NetworkInput input) { }
+
+    public void OnInput(NetworkRunner runner, NetworkInput input)
+    {
+        var data = playerInput.GetDrivingInput();
+
+        input.Set(data);
+
+        
+    }
     public void OnInputMissing(NetworkRunner runner, PlayerRef player, NetworkInput input) { }
     public void OnShutdown(NetworkRunner runner, ShutdownReason shutdownReason) { }
     public void OnConnectedToServer(NetworkRunner runner) { }

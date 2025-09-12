@@ -42,13 +42,12 @@ public class NetworkedVehicle : NetworkBehaviour
     [SerializeField] private float brakeForce;
     [SerializeField] private float accelerationTorque;
     [SerializeField] private AnimationCurve accelerationCurve;
-
-
-
-
+    
 
     [Header("Transforms")]
     [SerializeField] private List<Wheel> wheels;
+
+    [SerializeField] private Transform carBody;
 
     [Header("Components")]
     [SerializeField] private Rigidbody rb;
@@ -65,6 +64,10 @@ public class NetworkedVehicle : NetworkBehaviour
     //Local Car Values
 
     [Networked] private float steerAmount { get; set; } = 0;
+    
+    private float targetSteer = 0;
+
+    private float accelerationTarget = 0;
 
 
     private void Start()
@@ -79,10 +82,10 @@ public class NetworkedVehicle : NetworkBehaviour
         carInput.Enable();
 
 
-        if (Object.HasStateAuthority)
+        if (Object.HasInputAuthority)
         {
-            Camera.main.GetComponent<CinemachineFreeLook>().Follow = transform;
-            Camera.main.GetComponent<CinemachineFreeLook>().LookAt = transform;
+            Camera.main.GetComponent<CinemachineFreeLook>().Follow = carBody.transform;
+            Camera.main.GetComponent<CinemachineFreeLook>().LookAt = carBody.transform;
         }
     }
 
@@ -142,9 +145,6 @@ public class NetworkedVehicle : NetworkBehaviour
 
     void ManageSteering()
     {
-        if (Object.HasStateAuthority)
-        {
-            float targetSteer = carInput.Generic.Steer.ReadValue<float>();
 
             float rotateAmount = steerSpeed;
 
@@ -155,7 +155,7 @@ public class NetworkedVehicle : NetworkBehaviour
                     rotateAmount *= -1;
                 }
 
-                steerAmount += rotateAmount * Time.deltaTime;
+                steerAmount += rotateAmount * Runner.DeltaTime;
 
 
                 if (rotateAmount < 0 && steerAmount < targetSteer)
@@ -169,7 +169,7 @@ public class NetworkedVehicle : NetworkBehaviour
 
 
             }
-        }
+        
 
         for (int i = 0; i < wheels.Count; i++)
         {
@@ -206,7 +206,7 @@ public class NetworkedVehicle : NetworkBehaviour
             float desiredVelChange = -steeringVel * currentWheel.GetGripFactor();
 
             //turn change in velocity into an acceleration to apply to the vehicle in this one timestep
-            float desiredAccel = desiredVelChange / Time.fixedDeltaTime;
+            float desiredAccel = desiredVelChange / Runner.DeltaTime;
 
             //Force = Mass * Acceleration, mass of tyre and apply as force
 
@@ -217,14 +217,20 @@ public class NetworkedVehicle : NetworkBehaviour
 
     public override void FixedUpdateNetwork()
     {
+
+        if (GetInput(out DriveInputData data))
+        {
+            targetSteer=data.steerTarget;
+            accelerationTarget = data.accelerate;
+        }
+
+        rb.AddForce(transform.forward * 15000 * accelerationTarget* Runner.DeltaTime);
+        
+        
         ManageSuspension();
         ManageSteering();
 
-        if (Keyboard.current.spaceKey.isPressed && Object.HasInputAuthority)
-        {
-            rb.AddForce(transform.forward * 5000 * Time.fixedDeltaTime);
-            GUI.TextField(new Rect(new Vector2(Screen.width / 2, Screen.height / 2), new Vector2(150, 150)), "SPEEED");
-        }
+
         if (Keyboard.current.gKey.wasPressedThisFrame)
         {
             rb.velocity = Vector3.zero;

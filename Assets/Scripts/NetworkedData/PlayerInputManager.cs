@@ -30,6 +30,8 @@ public class PlayerInputManager : MonoBehaviour
         drivingInput = new DriveInputData();
 
         drivingInput.steerTarget = carInput.Generic.Steer.ReadValue<float>();
+        
+        drivingInput.accelerate = carInput.Generic.Accelerate.ReadValue<float>();
 
 
         return drivingInput;

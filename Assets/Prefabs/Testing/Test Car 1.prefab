@@ -326,9 +326,10 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 4037687975052491783}
-  - component: {fileID: 5264937297093287528}
   - component: {fileID: 5798545234688815783}
   - component: {fileID: 8102795455408503281}
+  - component: {fileID: 5617099166349571428}
+  - component: {fileID: 3996514167704926596}
   m_Layer: 3
   m_Name: Test Car 1
   m_TagString: Untagged
@@ -363,34 +364,6 @@ Transform:
   - {fileID: 2971774218062519440}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: -154.834, z: 0}
---- !u!114 &5264937297093287528
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1713789796603746505}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 899c63b594df1314e9d78c59be31a672, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  maxSpeed: 0
-  brakeForce: 0
-  accelerationTorque: 0
-  accelerationCurve:
-    serializedVersion: 2
-    m_Curve: []
-    m_PreInfinity: 2
-    m_PostInfinity: 2
-    m_RotationOrder: 4
-  wheels:
-  - {fileID: 2925581997940132087}
-  - {fileID: 2455558519890730572}
-  - {fileID: 4488176577252305173}
-  - {fileID: 2537875644057938764}
-  rb: {fileID: 8102795455408503281}
-  steerSpeed: 0.9
 --- !u!114 &5798545234688815783
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -408,7 +381,8 @@ MonoBehaviour:
   Flags: 262145
   NestedObjects: []
   NetworkedBehaviours:
-  - {fileID: 5264937297093287528}
+  - {fileID: 5617099166349571428}
+  - {fileID: 3996514167704926596}
   ForceRemoteRenderTimeframe: 0
 --- !u!54 &8102795455408503281
 Rigidbody:
@@ -437,6 +411,58 @@ Rigidbody:
   m_Interpolate: 0
   m_Constraints: 0
   m_CollisionDetection: 0
+--- !u!114 &5617099166349571428
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1713789796603746505}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b2a9681578a8b0843a865471e7e9b1c9, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  maxSpeed: 0
+  brakeForce: 0
+  accelerationTorque: 0
+  accelerationCurve:
+    serializedVersion: 2
+    m_Curve: []
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+  wheels:
+  - {fileID: 2925581997940132087}
+  - {fileID: 2455558519890730572}
+  - {fileID: 4488176577252305173}
+  - {fileID: 2537875644057938764}
+  carBody: {fileID: 4768034049321703025}
+  rb: {fileID: 8102795455408503281}
+  steerSpeed: 2
+--- !u!114 &3996514167704926596
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1713789796603746505}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0a591d221a634417e9827eb58e17de84, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _stateAuthorityChangeErrorCorrectionDelta: 0
+  SyncScale: 0
+  SyncParent: 1
+  _interpolationTarget: {fileID: 4768034049321703025}
+  UsePreciseRotation: 1
+  UseRenderSleepThresholds: 1
+  RenderThresholds:
+    UseEnergy: 1
+    Position: 0.01
+    Rotation: 0.01
+    Scale: 0.01
 --- !u!1 &1748232803050163235
 GameObject:
   m_ObjectHideFlags: 0
