@@ -28,11 +28,12 @@ public class Wheel : MonoBehaviour
 
     [Header("Steering Attributes")]
     [SerializeField] private float maxSteerAngle = 30.0f;
-    [SerializeField] private float gripFactor = 0.3f;
+
+    [SerializeField] private float gripStrength = 4;
+    [SerializeField] private AnimationCurve gripCurve;
     [SerializeField] private float wheelMass = 5;
 
-
-    public AnimationCurve gripFactorCurve;
+    
 
 
 
@@ -42,6 +43,11 @@ public class Wheel : MonoBehaviour
     private void Start()
     {
         suspensionRestDistance = transform.localPosition.y;
+    }
+
+    public bool IsDriven()
+    {
+        return isDriven;
     }
 
     public float GetWheelMass()
@@ -58,9 +64,14 @@ public class Wheel : MonoBehaviour
         return transform.right;
     }
 
-    public float GetGripFactor()
+    public float GetGripStrength()
     {
-        return gripFactor;
+        return gripStrength;
+    }
+
+    public float GetGripFactor(float steeringPercentage)
+    {
+        return gripCurve.Evaluate(steeringPercentage);
     }
 
     public float GetMaxRotation()

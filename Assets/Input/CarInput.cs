@@ -72,7 +72,7 @@ public partial class @CarInput: IInputActionCollection2, IDisposable
                     ""id"": ""a8f0fb57-62db-425c-ad52-8d5b152f382e"",
                     ""path"": ""<Keyboard>/s"",
                     ""interactions"": """",
-                    ""processors"": """",
+                    ""processors"": ""Invert"",
                     ""groups"": """",
                     ""action"": ""Brake"",
                     ""isComposite"": false,

@@ -174,7 +174,7 @@ public class Vehicle : NetworkBehaviour
 
             //change in velocity that the tyre is lookign to cause = -steeringVel*gripfactor
             //0 is no grip 1 is 100%
-            float desiredVelChange = -steeringVel * currentWheel.GetGripFactor();
+            float desiredVelChange = -steeringVel * currentWheel.GetGripFactor(54);
 
             //turn change in velocity into an acceleration to apply to the vehicle in this one timestep
             float desiredAccel = desiredVelChange / Time.fixedDeltaTime;

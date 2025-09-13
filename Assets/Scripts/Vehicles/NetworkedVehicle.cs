@@ -41,7 +41,11 @@ public class NetworkedVehicle : NetworkBehaviour
     [SerializeField] private float maxSpeed;
     [SerializeField] private float brakeForce;
     [SerializeField] private float accelerationTorque;
+    [SerializeField] private float engineSlowDownForce = 0.1f;
     [SerializeField] private AnimationCurve accelerationCurve;
+    [SerializeField] private AnimationCurve reverseAccelerationCurve;
+    
+    [SerializeField] private AnimationCurve speedSteerEffect;
     
 
     [Header("Transforms")]
@@ -75,18 +79,40 @@ public class NetworkedVehicle : NetworkBehaviour
 
     }
 
+    void OnDestroy()
+    {
+        carInput.Disable();
+    }
+
     public override void Spawned()
     {
         carInput = new CarInput();
 
         carInput.Enable();
 
-
+        Runner.SetIsSimulated(Object, true);
         if (Object.HasInputAuthority)
         {
             Camera.main.GetComponent<CinemachineFreeLook>().Follow = carBody.transform;
             Camera.main.GetComponent<CinemachineFreeLook>().LookAt = carBody.transform;
+
+            PlayerUI.instance.AssignVehicle(this);
         }
+    }
+
+    public float GetCarSpeed()
+    {
+        return rb.velocity.magnitude * 3.6f;
+    }
+    private float GetSpeedToMaxSpeed()
+    {
+        // get forward speed of the car in its direction of driving
+        float carSpeed=Vector3.Dot(transform.forward,rb.velocity);
+                
+        //normalise speed;
+        float normalisedSpeed= Mathf.Clamp01(Mathf.Abs(carSpeed)/maxSpeed);
+        
+        return normalisedSpeed;
     }
 
     private HitInformation RayCastFromWheel(Wheel wTransform)
@@ -155,7 +181,7 @@ public class NetworkedVehicle : NetworkBehaviour
                     rotateAmount *= -1;
                 }
 
-                steerAmount += rotateAmount * Runner.DeltaTime;
+                steerAmount += rotateAmount*speedSteerEffect.Evaluate(GetSpeedToMaxSpeed()) * Runner.DeltaTime;
 
 
                 if (rotateAmount < 0 && steerAmount < targetSteer)
@@ -201,10 +227,17 @@ public class NetworkedVehicle : NetworkBehaviour
             //Creates a unit vector of the magnitude of tyreworldvel projected onto steering dir
             float steeringVel = Vector3.Dot(steeringDir, tyreWorldVel);
 
+            
+            //Calculate percentage velocity is in Tyre.right direction
+            float steeringPercentage= Mathf.Abs(Vector3.Dot(currentWheel.GetRight(),rb.GetPointVelocity(currentWheel.transform.position)));
+            
             //change in velocity that the tyre is lookign to cause = -steeringVel*gripfactor
             //0 is no grip 1 is 100%
-            float desiredVelChange = -steeringVel * currentWheel.GetGripFactor();
+            float desiredVelChange = -steeringVel * currentWheel.GetGripFactor(steeringPercentage)*currentWheel.GetGripStrength();
 
+            //Modify velocity change by steering relative to max speed
+            desiredVelChange *= speedSteerEffect.Evaluate(GetSpeedToMaxSpeed());
+            
             //turn change in velocity into an acceleration to apply to the vehicle in this one timestep
             float desiredAccel = desiredVelChange / Runner.DeltaTime;
 
@@ -215,21 +248,108 @@ public class NetworkedVehicle : NetworkBehaviour
         }
     }
 
+    private void ManageDrive()
+    {
+        for (int i = 0; i < wheels.Count; i++)
+        {
+            //Manage current wheel
+            Wheel currentWheel = wheels[i];
+
+            Vector3 accelDir = currentWheel.transform.forward;
+
+            //How close the pedal is to the metal :)
+            float accelValue = accelerationTarget;
+
+            //Adjust the function if the tyre isn't driven, give a small deacceleration
+            if (!currentWheel.IsDriven())
+            {
+                continue;
+            }
+
+            
+            HitInformation info = RayCastFromWheel(currentWheel);
+
+            if (info.hit == false)
+            {
+                continue;
+            }
+            // get forward speed of the car in its direction of driving
+
+            float carSpeed=Vector3.Dot(transform.forward,rb.velocity);
+                
+            //normalise speed;
+            float normalisedSpeed= Mathf.Clamp01(Mathf.Abs(carSpeed)/maxSpeed);
+            
+            
+            //Forward Drive Mode;
+            if (accelValue > 0.0f)
+            {
+                
+                // get available torque
+                
+                float torque = accelerationCurve.Evaluate(normalisedSpeed)*accelValue;
+                
+                if (carSpeed >= -0.3f) //car is going forwards
+                {
+                    rb.AddForceAtPosition(accelDir*torque*accelerationTorque, currentWheel.transform.position);
+                }
+                else if(carSpeed < -0.3f) //car is reversing
+                {
+                    rb.AddForceAtPosition(accelDir*brakeForce*accelValue, currentWheel.transform.position);
+                }
+               
+            }
+            else if(accelValue < 0.0f ) //Reverse mode
+            {
+                
+                // get available torque
+
+                if (carSpeed > 0.3f) //car is going forwards
+                {
+                    rb.AddForceAtPosition(accelDir*brakeForce*accelValue, currentWheel.transform.position);
+                }
+                else if(carSpeed <= 0.3f) //car is reversing
+                {
+                    float torque = reverseAccelerationCurve.Evaluate(normalisedSpeed)*accelValue;
+                    rb.AddForceAtPosition(accelDir*torque*accelerationTorque, currentWheel.transform.position);
+                }
+
+            }
+            else //Engine Slowdown
+            {
+
+                float torque = accelerationTorque * engineSlowDownForce;
+                
+                if (carSpeed < -0.3f) //If the car is going backwards
+                {
+                    accelDir *= -1;
+                    rb.AddForceAtPosition(accelDir*torque, currentWheel.transform.position);
+                }
+                else if (carSpeed > 0.3f) //forwards
+                {
+                    rb.AddForceAtPosition(accelDir*-torque, currentWheel.transform.position);
+                }
+
+            }
+
+        }
+    }
+
     public override void FixedUpdateNetwork()
     {
 
         if (GetInput(out DriveInputData data))
         {
             targetSteer=data.steerTarget;
-            accelerationTarget = data.accelerate;
+            accelerationTarget = data.accelerate+data.brake;
         }
 
-        rb.AddForce(transform.forward * 15000 * accelerationTarget* Runner.DeltaTime);
+        //rb.AddForce(transform.forward * 15000 * accelerationTarget* Runner.DeltaTime);
         
         
         ManageSuspension();
         ManageSteering();
-
+        ManageDrive();
 
         if (Keyboard.current.gKey.wasPressedThisFrame)
         {
