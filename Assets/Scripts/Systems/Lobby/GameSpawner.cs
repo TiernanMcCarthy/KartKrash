@@ -15,10 +15,13 @@ public class GameSpawner : MonoBehaviour, INetworkRunnerCallbacks
     
     
     private PlayerInputManager playerInput;
+    
+    public static GameSpawner instance;
 
 
     private void Start()
     {
+        instance = this;
         playerInput=gameObject.AddComponent<PlayerInputManager>();
     }
 

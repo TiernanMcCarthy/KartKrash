@@ -399,6 +399,14 @@ public class NetworkedVehicle : NetworkBehaviour
 
     }
 
+    public void MoveToLocation(Vector3 location)
+    {
+        if (HasStateAuthority)
+        {
+            transform.position = location;
+        }
+    }
+
 
     private void OnDrawGizmos()
     {
