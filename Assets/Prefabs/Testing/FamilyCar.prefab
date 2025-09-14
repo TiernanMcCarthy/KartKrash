@@ -424,7 +424,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   maxSpeed: 44.703888
-  brakeForce: 140
+  brakeForce: 180
   accelerationTorque: 120
   engineSlowDownForce: 0.1
   accelerationCurve:
@@ -551,14 +551,14 @@ MonoBehaviour:
       inWeight: 0.33333334
       outWeight: 0.33333334
     - serializedVersion: 3
-      time: 0.95186675
-      value: 0.18300831
-      inSlope: -0.5097775
-      outSlope: -0.5097775
+      time: 1.3757343
+      value: 0.22542496
+      inSlope: -1.2658794
+      outSlope: -1.2658794
       tangentMode: 0
       weightedMode: 0
       inWeight: 0.33333334
-      outWeight: 0.33333334
+      outWeight: 0.4056939
     - serializedVersion: 3
       time: 1.7722571
       value: 0.036902666

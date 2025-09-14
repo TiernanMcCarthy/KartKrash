@@ -335,6 +335,35 @@ public class NetworkedVehicle : NetworkBehaviour
         }
     }
 
+    private void ManageFriction()
+    {
+        //Detect which wheels are grounded,
+        //work out opposite direction to car travel, 
+        //split max or force to 0 speed between the number of wheels that are on the ground.
+        
+        List<int> wheelsOnFloor = new List<int>();
+        for (int i = 0; i < wheels.Count; i++)
+        {
+            Wheel currentWheel = wheels[i];
+            
+            HitInformation info = RayCastFromWheel(currentWheel);
+
+            if (info.hit)
+            {
+                wheelsOnFloor.Add(i);
+            }
+        }
+        
+        // get forward speed of the car in its direction of driving
+
+        float carSpeed=Vector3.Dot(transform.forward,rb.velocity);
+
+        for (int w = 0; w < wheelsOnFloor.Count; w++)
+        {
+            Wheel currentWheel = wheels[wheelsOnFloor[w]];
+        }
+    }
+
     public override void FixedUpdateNetwork()
     {
 
@@ -350,6 +379,8 @@ public class NetworkedVehicle : NetworkBehaviour
         ManageSuspension();
         ManageSteering();
         ManageDrive();
+        
+        ManageFriction();
 
         if (Keyboard.current.gKey.wasPressedThisFrame)
         {

@@ -47,6 +47,17 @@
                 },
                 {
                     "name": "",
+                    "id": "bce79e55-0bc6-43cb-a1af-4eb8081e3605",
+                    "path": "<Gamepad>/rightTrigger",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "Accelerate",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
                     "id": "a8f0fb57-62db-425c-ad52-8d5b152f382e",
                     "path": "<Keyboard>/s",
                     "interactions": "",
@@ -58,8 +69,19 @@
                 },
                 {
                     "name": "",
-                    "id": "745c7d76-0765-4e12-b9c4-d1dc5926fa88",
-                    "path": "<Keyboard>/d",
+                    "id": "4971309c-0b67-4f52-b7f5-6ff3cd07621f",
+                    "path": "<Gamepad>/leftTrigger",
+                    "interactions": "",
+                    "processors": "Invert",
+                    "groups": "",
+                    "action": "Brake",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "e6ced4f7-809c-4633-9cc8-1b94d80e7502",
+                    "path": "<Joystick>/stick/x",
                     "interactions": "",
                     "processors": "",
                     "groups": "",
@@ -69,14 +91,47 @@
                 },
                 {
                     "name": "",
-                    "id": "6305b23a-5b38-4d8d-9858-ebc625f954a7",
-                    "path": "<Keyboard>/a",
+                    "id": "042029e6-5479-4593-bb2f-08c8bee96024",
+                    "path": "<Gamepad>/leftStick",
                     "interactions": "",
-                    "processors": "Invert",
+                    "processors": "",
                     "groups": "",
                     "action": "Steer",
                     "isComposite": false,
                     "isPartOfComposite": false
+                },
+                {
+                    "name": "2D Vector",
+                    "id": "a5710f39-91d1-4566-9fd1-e6ad71bdeab1",
+                    "path": "2DVector(mode=1)",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "Steer",
+                    "isComposite": true,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "left",
+                    "id": "db8d8506-c86b-4ae0-b51f-54046e2c0a0b",
+                    "path": "<Keyboard>/a",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "Steer",
+                    "isComposite": false,
+                    "isPartOfComposite": true
+                },
+                {
+                    "name": "right",
+                    "id": "25bbf9da-341e-405f-a2a2-f849846ad7af",
+                    "path": "<Keyboard>/d",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "Steer",
+                    "isComposite": false,
+                    "isPartOfComposite": true
                 }
             ]
         }
