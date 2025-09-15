@@ -29,7 +29,12 @@ public class PlayerUI : MonoBehaviour
     {
         if (playerVehicle != null)
         {
-            carSpeedText.text = string.Format("{0} KPH", playerVehicle.GetCarSpeed().ToString("F2"));
+            float speed = playerVehicle.GetCarSpeed();
+            if (Mathf.Abs(speed) < 0.12f)
+            {
+                speed = 0.0f;
+            }
+            carSpeedText.text = string.Format("{0} KPH", speed.ToString("F1"));
         }
     }
 }

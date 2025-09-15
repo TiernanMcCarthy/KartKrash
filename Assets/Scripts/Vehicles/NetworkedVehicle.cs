@@ -42,6 +42,8 @@ public class NetworkedVehicle : NetworkBehaviour
     [SerializeField] private float brakeForce;
     [SerializeField] private float accelerationTorque;
     [SerializeField] private float engineSlowDownForce = 0.1f;
+    [SerializeField] private float frictionForce;
+    [SerializeField] private AnimationCurve frictionCurve;
     [SerializeField] private AnimationCurve accelerationCurve;
     [SerializeField] private AnimationCurve reverseAccelerationCurve;
     
@@ -358,10 +360,32 @@ public class NetworkedVehicle : NetworkBehaviour
 
         float carSpeed=Vector3.Dot(transform.forward,rb.velocity);
 
+        float frictionAtCarSpeed = -frictionForce * frictionCurve.Evaluate(GetSpeedToMaxSpeed());
+        if (Mathf.Abs(carSpeed) < frictionAtCarSpeed)
+        {
+            frictionAtCarSpeed = Mathf.Abs(carSpeed);
+        }
+
+        int dir = 1;
+        if (carSpeed < 0)
+        {
+            dir = -1;
+        }
+
+        if (wheelsOnFloor.Count > 0)
+        {
+            frictionAtCarSpeed /= wheelsOnFloor.Count;
+
+            frictionAtCarSpeed *= dir;
+        }
+
         for (int w = 0; w < wheelsOnFloor.Count; w++)
         {
             Wheel currentWheel = wheels[wheelsOnFloor[w]];
+            
+            rb.AddForceAtPosition(currentWheel.transform.forward*frictionAtCarSpeed,currentWheel.transform.position);
         }
+        
     }
 
     public override void FixedUpdateNetwork()

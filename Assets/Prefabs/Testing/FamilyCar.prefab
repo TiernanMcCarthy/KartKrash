@@ -427,6 +427,49 @@ MonoBehaviour:
   brakeForce: 180
   accelerationTorque: 120
   engineSlowDownForce: 0.1
+  frictionForce: 60
+  frictionCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 1
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 136
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    - serializedVersion: 3
+      time: 0.02
+      value: 0.5
+      inSlope: -1.6172839
+      outSlope: -1.6172839
+      tangentMode: 136
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    - serializedVersion: 3
+      time: 0.50625
+      value: 0.18125
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 136
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    - serializedVersion: 3
+      time: 1.00625
+      value: 0.18125
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 136
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
   accelerationCurve:
     serializedVersion: 2
     m_Curve:
@@ -571,15 +614,15 @@ MonoBehaviour:
     - serializedVersion: 3
       time: 2
       value: 0.001
-      inSlope: -0.0026714315
-      outSlope: -0.0026714315
+      inSlope: -0.0032521463
+      outSlope: -0.0032521463
       tangentMode: 136
       weightedMode: 0
       inWeight: 0.33333334
       outWeight: 0.33333334
     - serializedVersion: 3
       time: 3
-      value: 0.000180043
+      value: 0.00000180043
       inSlope: 0
       outSlope: 0
       tangentMode: 136
