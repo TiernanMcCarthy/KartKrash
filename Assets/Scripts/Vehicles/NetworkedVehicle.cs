@@ -117,17 +117,47 @@ public class NetworkedVehicle : NetworkBehaviour
         return normalisedSpeed;
     }
 
+    
     private HitInformation RayCastFromWheel(Wheel wTransform)
     {
         RaycastHit hit;
         int layerMask = ~LayerMask.GetMask("Vehicle");
         if (Physics.Raycast(wTransform.transform.position, wTransform.transform.up * -1, out hit, wTransform.GetWheelSize(), layerMask))
-        {
+         {
 
             return new HitInformation(true, hit.point, hit.normal, hit.distance, hit.collider.gameObject);
-        }
+         }
         return new HitInformation(false);
     }
+    
+    /* Messing Around with Spherecast, not stable and not what I want, work on later
+    private HitInformation RayCastFromWheel(Wheel wTransform)
+    {
+        RaycastHit hit;
+        int layerMask = ~LayerMask.GetMask("Vehicle");
+
+        // sphere radius (wheel radius)
+        float wheelRadius = wTransform.GetWheelSize() * 0.5f;
+
+        // maxDistance should allow the SPHERE CENTER to reach the ground when suspension is fully extended
+        // suspension rest distance is how far from the wheel origin to ground when at rest (you set this at Start in Wheel)
+        float suspensionRest = wTransform.GetSuspensionRestDistance();
+
+        // sphereCast distance is how far we let the center travel
+        float sphereCastDistance = suspensionRest + wheelRadius;
+
+        Vector3 wheelCenter = wTransform.transform.position - wTransform.transform.up * wheelRadius;
+
+        Ray rayTemplate = new Ray(wheelCenter, -wTransform.transform.up);
+
+        if (Physics.SphereCast(rayTemplate, wheelRadius, out hit, suspensionRest + wheelRadius, layerMask))
+        {
+            float centerDistance = hit.distance + wheelRadius;
+            return new HitInformation(true, hit.point, hit.normal, centerDistance, hit.collider.gameObject);
+        }
+
+        return new HitInformation(false);
+    }*/
 
     void ManageSuspension()
     {
@@ -384,6 +414,12 @@ public class NetworkedVehicle : NetworkBehaviour
             Wheel currentWheel = wheels[wheelsOnFloor[w]];
             
             rb.AddForceAtPosition(currentWheel.transform.forward*frictionAtCarSpeed,currentWheel.transform.position);
+        }
+        
+        //Generic Car Friction
+        if (wheelsOnFloor.Count > 0)
+        {
+            rb.velocity *= 0.9995f;
         }
         
     }

@@ -28,8 +28,8 @@ Transform:
   m_GameObject: {fileID: 155015635951757435}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: 0.7071068, w: 0.7071068}
-  m_LocalPosition: {x: 0, y: -0.37199998, z: 0}
-  m_LocalScale: {x: 0.3194204, y: 0.1, z: 0.353255}
+  m_LocalPosition: {x: 0, y: -0.0019999743, z: 0}
+  m_LocalScale: {x: 0.3194204, y: 0.09999997, z: 0.35325494}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 4775879533820498971}
@@ -239,8 +239,8 @@ Transform:
   m_GameObject: {fileID: 1591980487743412575}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: 0.7071068, w: 0.7071068}
-  m_LocalPosition: {x: 0, y: -0.37199998, z: 0}
-  m_LocalScale: {x: 0.3194204, y: 0.1, z: 0.353255}
+  m_LocalPosition: {x: 0, y: -0.0019999743, z: 0}
+  m_LocalScale: {x: 0.3194204, y: 0.09999997, z: 0.35325494}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 3714560765004745969}
@@ -331,7 +331,7 @@ GameObject:
   - component: {fileID: 5617099166349571428}
   - component: {fileID: 3996514167704926596}
   m_Layer: 3
-  m_Name: FamilyCar
+  m_Name: SphereCastFamilyCar
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -376,7 +376,7 @@ MonoBehaviour:
   m_Script: {fileID: -1552182283, guid: e725a070cec140c4caffb81624c8c787, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  SortKey: 2458526341
+  SortKey: 459836698
   ObjectInterest: 1
   Flags: 262145
   NestedObjects: []
@@ -691,8 +691,8 @@ Transform:
   m_GameObject: {fileID: 1748232803050163235}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: 0.7071068, w: 0.7071068}
-  m_LocalPosition: {x: 0, y: -0.37199998, z: 0}
-  m_LocalScale: {x: 0.3194204, y: 0.1, z: 0.353255}
+  m_LocalPosition: {x: 0, y: -0.0019999743, z: 0}
+  m_LocalScale: {x: 0.3194204, y: 0.09999997, z: 0.35325494}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 7973645370728876662}
@@ -1007,8 +1007,8 @@ Transform:
   m_GameObject: {fileID: 2144221501399166179}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: 0.7071068, w: 0.7071068}
-  m_LocalPosition: {x: 0, y: -0.37199998, z: 0}
-  m_LocalScale: {x: 0.3194204, y: 0.1, z: 0.353255}
+  m_LocalPosition: {x: 0, y: -0.0019999743, z: 0}
+  m_LocalScale: {x: 0.3194204, y: 0.09999997, z: 0.35325494}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 7626432461105582679}
@@ -1216,7 +1216,7 @@ Transform:
   m_GameObject: {fileID: 2939883409925756012}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0.85, y: 0.708, z: -1.208}
+  m_LocalPosition: {x: 0.85, y: 0.69, z: -1.208}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -1238,12 +1238,12 @@ MonoBehaviour:
   isDriven: 1
   isSteerable: 0
   invertRight: 0
-  wheelSize: 0.76
+  wheelSize: 0.1
   springStrength: 3900
   suspensionLength: 0
   dampnerForce: 100
   tractionForce: 0
-  maxSteerAngle: 80
+  maxSteerAngle: 50
   gripStrength: 3.7
   gripCurve:
     serializedVersion: 2
@@ -1287,7 +1287,7 @@ MonoBehaviour:
     m_PreInfinity: 2
     m_PostInfinity: 2
     m_RotationOrder: 4
-  wheelMass: 1.2
+  wheelMass: 2
 --- !u!1 &4870297853091909306
 GameObject:
   m_ObjectHideFlags: 0
@@ -1524,7 +1524,7 @@ Transform:
   m_GameObject: {fileID: 5829581967789194817}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -0.85, y: 0.708, z: 1.72}
+  m_LocalPosition: {x: -0.85, y: 0.69, z: 1.72}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -1546,7 +1546,7 @@ MonoBehaviour:
   isDriven: 0
   isSteerable: 1
   invertRight: 1
-  wheelSize: 0.76
+  wheelSize: 0.1
   springStrength: 3900
   suspensionLength: 0
   dampnerForce: 100
@@ -1810,7 +1810,7 @@ Transform:
   m_GameObject: {fileID: 7706070841200617466}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: -0.85, y: 0.708, z: -1.208}
+  m_LocalPosition: {x: -0.85, y: 0.69, z: -1.208}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -1832,12 +1832,12 @@ MonoBehaviour:
   isDriven: 1
   isSteerable: 0
   invertRight: 1
-  wheelSize: 0.76
+  wheelSize: 0.1
   springStrength: 3900
   suspensionLength: 0
   dampnerForce: 100
   tractionForce: 0
-  maxSteerAngle: 80
+  maxSteerAngle: 50
   gripStrength: 3.7
   gripCurve:
     serializedVersion: 2
@@ -1881,7 +1881,7 @@ MonoBehaviour:
     m_PreInfinity: 2
     m_PostInfinity: 2
     m_RotationOrder: 4
-  wheelMass: 1.2
+  wheelMass: 2
 --- !u!1 &8181940189072153604
 GameObject:
   m_ObjectHideFlags: 0
@@ -1908,7 +1908,7 @@ Transform:
   m_GameObject: {fileID: 8181940189072153604}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0.85, y: 0.708, z: 1.72}
+  m_LocalPosition: {x: 0.85, y: 0.69, z: 1.72}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -1930,7 +1930,7 @@ MonoBehaviour:
   isDriven: 0
   isSteerable: 1
   invertRight: 0
-  wheelSize: 0.76
+  wheelSize: 0.1
   springStrength: 3900
   suspensionLength: 0
   dampnerForce: 100

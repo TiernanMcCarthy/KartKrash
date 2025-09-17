@@ -19,6 +19,7 @@ public class Wheel : MonoBehaviour
 
     //Offset of 0 is the resting point, + - is directions from resting point
     [SerializeField] private float springStrength;
+    [SerializeField] private float suspensionLength;
 
     //Dampner force slows down motion of the spring so it rests
     [SerializeField] private float dampnerForce;
