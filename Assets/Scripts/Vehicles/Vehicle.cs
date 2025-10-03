@@ -64,7 +64,7 @@ public class Vehicle : NetworkBehaviour
         if (Physics.Raycast(wTransform.transform.position, wTransform.transform.up * -1, out hit, wTransform.GetWheelSize(), layerMask))
         {
 
-            return new HitInformation(true, hit.point, hit.normal, hit.distance, hit.collider.gameObject);
+            return new HitInformation(true, hit.point, hit.normal, hit.distance, hit.collider.gameObject,hit.rigidbody);
         }
         return new HitInformation(false);
     }
