@@ -18,13 +18,16 @@ class HitInformation
 
     public GameObject hitObject;
 
-    public HitInformation(bool hit, Vector3 hitLocation, Vector3 hitNormal, float hitDistance, GameObject hitObject)
+    public Rigidbody hitRigid;
+
+    public HitInformation(bool hit, Vector3 hitLocation, Vector3 hitNormal, float hitDistance, GameObject hitObject, Rigidbody rigid)
     {
         this.hit = hit;
         this.hitLocation = hitLocation;
         this.hitNormal = hitNormal;
         this.hitDistance = hitDistance;
         this.hitObject = hitObject;
+        this.hitRigid = rigid;
     }
 
     public HitInformation(bool hit)
@@ -125,7 +128,7 @@ public class NetworkedVehicle : NetworkBehaviour
         if (Physics.Raycast(wTransform.transform.position, wTransform.transform.up * -1, out hit, wTransform.GetWheelSize(), layerMask))
          {
 
-            return new HitInformation(true, hit.point, hit.normal, hit.distance, hit.collider.gameObject);
+            return new HitInformation(true, hit.point, hit.normal, hit.distance, hit.collider.gameObject, hit.rigidbody);
          }
         return new HitInformation(false);
     }
