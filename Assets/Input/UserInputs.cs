@@ -62,6 +62,15 @@ public partial class @UserInputs: IInputActionCollection2, IDisposable
                     ""processors"": """",
                     ""interactions"": """",
                     ""initialStateCheck"": true
+                },
+                {
+                    ""name"": ""PrimaryAction"",
+                    ""type"": ""Value"",
+                    ""id"": ""70738512-f9e1-455d-88a0-ecd5360698bb"",
+                    ""expectedControlType"": """",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": true
                 }
             ],
             ""bindings"": [
@@ -174,6 +183,28 @@ public partial class @UserInputs: IInputActionCollection2, IDisposable
                     ""action"": ""LookY"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""b7a1f5fb-6fc0-4105-b2a8-ba39e34ae285"",
+                    ""path"": ""<Keyboard>/space"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""PrimaryAction"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""42c9df1b-61b1-4afd-bf4f-c378183f4517"",
+                    ""path"": ""<Gamepad>/buttonSouth"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""PrimaryAction"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
                 }
             ]
         }
@@ -186,6 +217,7 @@ public partial class @UserInputs: IInputActionCollection2, IDisposable
         m_Generic_Right = m_Generic.FindAction("Right", throwIfNotFound: true);
         m_Generic_LookX = m_Generic.FindAction("LookX", throwIfNotFound: true);
         m_Generic_LookY = m_Generic.FindAction("LookY", throwIfNotFound: true);
+        m_Generic_PrimaryAction = m_Generic.FindAction("PrimaryAction", throwIfNotFound: true);
     }
 
     ~@UserInputs()
@@ -256,6 +288,7 @@ public partial class @UserInputs: IInputActionCollection2, IDisposable
     private readonly InputAction m_Generic_Right;
     private readonly InputAction m_Generic_LookX;
     private readonly InputAction m_Generic_LookY;
+    private readonly InputAction m_Generic_PrimaryAction;
     public struct GenericActions
     {
         private @UserInputs m_Wrapper;
@@ -264,6 +297,7 @@ public partial class @UserInputs: IInputActionCollection2, IDisposable
         public InputAction @Right => m_Wrapper.m_Generic_Right;
         public InputAction @LookX => m_Wrapper.m_Generic_LookX;
         public InputAction @LookY => m_Wrapper.m_Generic_LookY;
+        public InputAction @PrimaryAction => m_Wrapper.m_Generic_PrimaryAction;
         public InputActionMap Get() { return m_Wrapper.m_Generic; }
         public void Enable() { Get().Enable(); }
         public void Disable() { Get().Disable(); }
@@ -285,6 +319,9 @@ public partial class @UserInputs: IInputActionCollection2, IDisposable
             @LookY.started += instance.OnLookY;
             @LookY.performed += instance.OnLookY;
             @LookY.canceled += instance.OnLookY;
+            @PrimaryAction.started += instance.OnPrimaryAction;
+            @PrimaryAction.performed += instance.OnPrimaryAction;
+            @PrimaryAction.canceled += instance.OnPrimaryAction;
         }
 
         private void UnregisterCallbacks(IGenericActions instance)
@@ -301,6 +338,9 @@ public partial class @UserInputs: IInputActionCollection2, IDisposable
             @LookY.started -= instance.OnLookY;
             @LookY.performed -= instance.OnLookY;
             @LookY.canceled -= instance.OnLookY;
+            @PrimaryAction.started -= instance.OnPrimaryAction;
+            @PrimaryAction.performed -= instance.OnPrimaryAction;
+            @PrimaryAction.canceled -= instance.OnPrimaryAction;
         }
 
         public void RemoveCallbacks(IGenericActions instance)
@@ -324,5 +364,6 @@ public partial class @UserInputs: IInputActionCollection2, IDisposable
         void OnRight(InputAction.CallbackContext context);
         void OnLookX(InputAction.CallbackContext context);
         void OnLookY(InputAction.CallbackContext context);
+        void OnPrimaryAction(InputAction.CallbackContext context);
     }
 }
