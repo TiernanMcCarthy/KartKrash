@@ -6,6 +6,6 @@ EditorBuildSettings:
   serializedVersion: 2
   m_Scenes:
   - enabled: 1
-    path: Assets/Scenes/NetworkedCarScene.unity
-    guid: 628ddd02109e43ff0a45fd0c13ab7398
+    path: Assets/Scenes/CharacterTestScene.unity
+    guid: 36cf8f72d73af524683725b55681f314
   m_configObjects: {}

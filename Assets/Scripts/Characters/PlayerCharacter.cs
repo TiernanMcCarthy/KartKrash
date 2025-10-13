@@ -15,6 +15,7 @@ public class PlayerCharacter : MonoBehaviour
     [Header("Jumping Properties")] 
     [SerializeField] private bool canJump = false;
     [SerializeField] private float coyoteTime = 0.2f;
+    [SerializeField] private float jumpInterval = 0.2f;
     [SerializeField] private float maxJumpTime = 0.3f;
     [SerializeField] private float jumpForce;
     [SerializeField] private float jumpLength;
@@ -67,6 +68,9 @@ public class PlayerCharacter : MonoBehaviour
         inputs= new UserInputs();
 
         inputs.Enable();
+
+        _jumpTime = Time.time;
+        lastGroundedTime = Time.time;
     }
 
 
@@ -129,7 +133,10 @@ public class PlayerCharacter : MonoBehaviour
         }
         else
         {
-            canJump = true;
+            if (Time.time - _jumpTime > jumpInterval)
+            {
+                canJump = true;
+            }
         }
         
         
@@ -299,7 +306,9 @@ public class PlayerCharacter : MonoBehaviour
     {
         if (_isJumping)
         {
-            rig.AddForce(Vector3.up * jumpForce, ForceMode.Force);
+            rig.AddForce(Vector3.up * jumpForce*(1-(Time.time-_jumpTime)/jumpLength));
+
+            Debug.Log(Vector3.up * jumpForce * (1 - (Time.time - _jumpTime) / jumpLength));
         }
     }
     void ManageJump()
@@ -320,6 +329,9 @@ public class PlayerCharacter : MonoBehaviour
                 {
                     _jumpTime = Time.time;
                     _isJumping=true;
+                    rig.velocity = new Vector3(rig.velocity.x, 0, rig.velocity.z);
+                    rig.AddForce(Vector3.up * jumpForce, ForceMode.Impulse);
+
                 }
             }
         }
