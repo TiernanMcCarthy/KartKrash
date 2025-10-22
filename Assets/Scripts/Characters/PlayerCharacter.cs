@@ -39,8 +39,6 @@ public class PlayerCharacter : MonoBehaviour
 
 
     [SerializeField] private bool isGrounded = false;
-    
-    public TMPro.TMP_Text speed;
 
     Quaternion startingRot;
 
@@ -126,7 +124,7 @@ public class PlayerCharacter : MonoBehaviour
         //Manage Coyote Time
         if (hitInfo.hit == false)
         {
-            if (Time.time - lastGroundedTime > coyoteTime)
+            if (Time.time - lastGroundedTime > coyoteTime || _isJumping)
             {
                 canJump = false;
             }
@@ -295,9 +293,25 @@ public class PlayerCharacter : MonoBehaviour
         rig.velocity= new Vector3(rig.velocity.x,yVelocity,rig.velocity.z);
     }
 
-    IEnumerator JumpCoroutine()
+    public float jumpSlowDown = 0.1f;
+    IEnumerator JumpSlowDown()
     {
-        
+        float targetVelocity = 0;
+        float velocityY = rig.velocity.y;
+
+        float t = 0;
+
+        while (velocityY > 1f)
+        {
+            velocityY=rig.velocity.y;
+            velocityY = Mathf.Lerp(velocityY, targetVelocity, t);
+            t += jumpSlowDown*Time.deltaTime;
+            
+            rig.velocity = new Vector3(rig.velocity.x, velocityY, rig.velocity.z);
+            yield return new WaitForEndOfFrame();
+        }
+
+
 
         yield return null;
     }
@@ -317,7 +331,14 @@ public class PlayerCharacter : MonoBehaviour
         {
             if (Time.time - _jumpTime > jumpLength || !inputs.Generic.PrimaryAction.IsPressed())
             {
+                if (!inputs.Generic.PrimaryAction.IsPressed() & _isJumping)
+                {
+                    StartCoroutine(JumpSlowDown());
+                }
                 _isJumping = false;
+
+
+                //StartCoroutine(JumpSlowDown());
             }
 
         }
@@ -330,7 +351,7 @@ public class PlayerCharacter : MonoBehaviour
                     _jumpTime = Time.time;
                     _isJumping=true;
                     rig.velocity = new Vector3(rig.velocity.x, 0, rig.velocity.z);
-                    rig.AddForce(Vector3.up * jumpForce, ForceMode.Impulse);
+                    rig.AddForce(Vector3.up * jumpForce*1.3f, ForceMode.Impulse);
 
                 }
             }
@@ -345,7 +366,7 @@ public class PlayerCharacter : MonoBehaviour
     void Update()
     {
         ManagePlayerDirection();
-        speed.text = rig.velocity.magnitude.ToString();
+
     }
 
     Rigidbody hitObject=null;
