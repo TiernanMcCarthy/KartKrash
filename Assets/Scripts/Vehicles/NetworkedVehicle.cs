@@ -98,10 +98,10 @@ public class NetworkedVehicle : NetworkBehaviour
         Runner.SetIsSimulated(Object, true);
         if (Object.HasInputAuthority)
         {
-            Camera.main.GetComponent<CinemachineFreeLook>().Follow = carBody.transform;
-            Camera.main.GetComponent<CinemachineFreeLook>().LookAt = carBody.transform;
+           // Camera.main.GetComponent<CinemachineFreeLook>().Follow = carBody.transform;
+            //Camera.main.GetComponent<CinemachineFreeLook>().LookAt = carBody.transform;
 
-            PlayerUI.instance.AssignVehicle(this);
+            //PlayerUI.instance.AssignVehicle(this);
         }
     }
 

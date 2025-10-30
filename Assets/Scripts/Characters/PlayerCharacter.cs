@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.ProBuilder.MeshOperations;
 
-public class PlayerCharacter : MonoBehaviour
+public class PlayerCharacter : Entity
 {
     [Header("Player Properties")]
     [SerializeField] private float playerAcceleration;
@@ -11,6 +11,7 @@ public class PlayerCharacter : MonoBehaviour
     [SerializeField] private float maxAccelerationForce;
     [SerializeField] private AnimationCurve accelerationFromDot;
     [SerializeField] private AnimationCurve maxAccelerationFromDot;
+    [SerializeField] private AnimationCurve playerAccelerationCurve;
 
     [Header("Jumping Properties")] 
     [SerializeField] private bool canJump = false;
@@ -37,8 +38,16 @@ public class PlayerCharacter : MonoBehaviour
     [SerializeField] private float uprightSpringStrength;
     [SerializeField] private float uprightDampnerForce;
 
+    [SerializeField] private AnimationCurve slopeGripFactor;
+    
+    // Smoothly apply resistance between these angles                
+    float resistStartAngle = 20f; // begin resisting                 
+    float resistFullAngle  = 40f; // completely block uphill motion  
+    float uphillResistance = 2f;  // scaling factor                  
+
 
     [SerializeField] private bool isGrounded = false;
+    [SerializeField] private bool canStand = false;
 
     Quaternion startingRot;
 
@@ -69,6 +78,25 @@ public class PlayerCharacter : MonoBehaviour
 
         _jumpTime = Time.time;
         lastGroundedTime = Time.time;
+
+        //Init Slope Factors
+        if (slopeGripFactor.length > 0)
+        {
+            resistStartAngle = slopeGripFactor.keys[0].value;
+
+            resistFullAngle = slopeGripFactor.keys[slopeGripFactor.length - 1].value;
+        }
+    }
+    
+    private float GetGroundAngleRelativeToGravity()
+    {
+        RaycastHit hit;
+        float slopeAngle = 0;
+        if(Physics.Raycast(transform.position, transform.up * -1, out hit, rideHeight * 1.2f,~0, QueryTriggerInteraction.Ignore))
+        {
+            slopeAngle = Vector3.Angle(hit.normal, -Physics.gravity);
+        }
+        return slopeAngle;
     }
 
 
@@ -114,13 +142,23 @@ public class PlayerCharacter : MonoBehaviour
 
     private Vector3 groundVelocity = Vector3.zero;
     
+    private Vector3 groundNormal = Vector3.zero;
+    
+                                     
+    private float gripRatio;
+    
     private void ManageSpring()
     {
         HitInformation hitInfo = RaycastFromBody(transform);
 
+        groundNormal = hitInfo.hitNormal;
         //Lets think about different Gravity Directions later :)
         Vector3 downDir = Vector3.down;
 
+         canStand = GetGroundAngleRelativeToGravity() < 40;
+
+         gripRatio = slopeGripFactor.Evaluate(GetGroundAngleRelativeToGravity());
+         
         //Manage Coyote Time
         if (hitInfo.hit == false)
         {
@@ -137,10 +175,14 @@ public class PlayerCharacter : MonoBehaviour
             }
         }
         
-        
+
         //Jump checks later
         isGrounded = hitInfo.hit;
-        
+
+        if (canStand == false)
+        {
+            return;
+        }
         
         if (hitInfo.hit)
         {
@@ -188,7 +230,7 @@ public class PlayerCharacter : MonoBehaviour
             //Float player
             if (!_isJumping)
             {
-                rig.AddForce(rayDir * springForce);
+                rig.AddForce(rayDir * springForce*gripRatio);
 
                 if (hitObject != null) //Add opposite spring force to object to simulate standing on it
                 {
@@ -227,6 +269,9 @@ public class PlayerCharacter : MonoBehaviour
         desiredDir = moveDirection;
     }
 
+    #region Old Movement
+    //Old Movement
+    /*
     private void ManageMovement()
     {
         if (hitObject != null)
@@ -236,21 +281,51 @@ public class PlayerCharacter : MonoBehaviour
         
         if (playerInputs.magnitude == 0) return;
         
-        Vector3 movementDir = desiredDir;
-        m_UnitGoal = movementDir;
+       // Vector3 movementDir = desiredDir;
+        Vector3 movementDir = Vector3.ProjectOnPlane(desiredDir, groundNormal).normalized;
         
+        
+        // Calculate slope steepness
+        float slopeAngle = Vector3.Angle(groundNormal, Vector3.up);
+
+        float modifiedAcceleration = playerAcceleration;
+        // Reduce uphill movement on steep slopes
+        if (slopeAngle > 0f)
+        {
+            // How much the player is trying to move uphill (dot between movement direction and up)
+            float uphillFactor = Vector3.Dot(movementDir, Vector3.up);
+
+            if (uphillFactor > 0f) // moving up the slope
+            {
+                // Compute slope steepness factor (e.g. 0–1 between easy & impossible)
+                float steepnessRatio = Mathf.InverseLerp(20f, 40f, slopeAngle);
+            
+                // If slope too steep, scale down the uphill movement
+                float uphillResistance = Mathf.Lerp(1f, 0f, steepnessRatio);
+
+                // Reduce uphill force
+                movementDir = Vector3.Lerp(movementDir, Vector3.ProjectOnPlane(movementDir, Vector3.up), steepnessRatio);
+                modifiedAcceleration *= uphillResistance;
+            }
+        }
+        
+        
+        
+        
+        m_UnitGoal = movementDir;
+
         Vector3 unitVel = rig.velocity.sqrMagnitude > 0.001f ? rig.velocity.normalized : Vector3.zero;
 
         float velDot = Vector3.Dot(m_UnitGoal, unitVel);
-        
+
         float accelDot = Mathf.Max(accelerationFromDot.Evaluate(velDot), 0.4f);
         float maxAccelDot = Mathf.Max(maxAccelerationFromDot.Evaluate(velDot), 0.4f);
 
-        float accel = playerAcceleration * accelDot;
+        float accel = modifiedAcceleration * accelDot;
         float maxAccel = maxAccelerationForce * maxAccelDot;
 
         float targetSpeed = maxSpeed * Mathf.Clamp01((playerInputs.magnitude));
-        
+
         Vector3 goalVel = m_UnitGoal * targetSpeed;
         m_GoalVel = Vector3.MoveTowards(m_GoalVel, goalVel, accel * Time.fixedDeltaTime);
 
@@ -259,7 +334,120 @@ public class PlayerCharacter : MonoBehaviour
 
         Vector3 forceScale = new Vector3(1, 0, 1);
         rig.AddForce(Vector3.Scale(neededAccel * rig.mass, forceScale));
-    }
+    }*/
+             #endregion
+
+    private void ManageMovement()
+    {
+        
+        // [MODIFIERS FOR PLAYER MOVEMENT & PLAYER IMPARTING VELOCITY] 
+        //Air Movement modifiers
+        float airTimeModifier = 1;
+
+        if (!isGrounded)
+        {
+            airTimeModifier = 0.5f;
+        }
+        
+        //Add player velocity to object beneath them
+        if (hitObject != null)
+        {
+            rig.AddForce(rig.velocity * Time.fixedDeltaTime, ForceMode.Impulse);
+        }
+        
+        //If the player isn't moving, we don't need to calculate any new forces
+        if (playerInputs.magnitude == 0) return;
+        
+        
+        // [CALCULATING PLAYER VELOCITY MOVEMENT & DIRECTION]  
+
+        // Project movement dir along a plane so that we can travel over slopes more efficently
+        Vector3 movementDir = Vector3.ProjectOnPlane(desiredDir, groundNormal).normalized;
+        m_UnitGoal = movementDir;
+
+
+
+        // Calculate velocity for directions
+        Vector3 unitVel = rig.velocity.sqrMagnitude > 0.3f ? rig.velocity.normalized : rig.transform.forward*0.3f;
+        float velDot = Vector3.Dot(m_UnitGoal, unitVel);
+                                  
+        //Get potential acceleration change from current velocity
+        float accelDot = Mathf.Max(accelerationFromDot.Evaluate(velDot), 0.4f);
+        float maxAccelDot = Mathf.Max(maxAccelerationFromDot.Evaluate(velDot), 0.4f);
+
+        float tempAcceleration = playerAcceleration;
+        
+        tempAcceleration*=Mathf.Clamp01(playerAccelerationCurve.Evaluate(rig.velocity.magnitude/maxSpeed)*2);
+
+
+        float accel = tempAcceleration * accelDot;
+        
+        
+        accel *= airTimeModifier;
+        
+        float maxAccel = maxAccelerationForce * maxAccelDot;
+        
+        //Calculate goal velocity for our player
+        float targetSpeed = maxSpeed * Mathf.Clamp01(playerInputs.magnitude);
+        
+        
+
+        Vector3 goalVel = m_UnitGoal * targetSpeed;
+        m_GoalVel = Vector3.MoveTowards(m_GoalVel, goalVel, accel * Time.fixedDeltaTime);
+        
+        
+        //calculate desired acceleration and clamp that to the max acceleration
+        Vector3 neededAccel = (m_GoalVel - rig.velocity) / Time.fixedDeltaTime;
+        neededAccel = Vector3.ClampMagnitude(neededAccel, maxAccel);
+
+        
+        // [UPHILL MODIFIERS FOR PLAYER MOVEMENT]
+        
+        // Compute uphill direction (the direction up the slope surface)
+        Vector3 uphillDir = Vector3.ProjectOnPlane(Vector3.up, groundNormal);
+        if (uphillDir.sqrMagnitude > 0.0001f)
+            uphillDir.Normalize();
+        else
+            uphillDir = Vector3.zero;
+
+        float slopeAngle = Vector3.Angle(groundNormal, Vector3.up);
+
+
+
+
+
+
+        if (slopeAngle > resistStartAngle && uphillDir != Vector3.zero)
+        {
+            // how much of the acceleration points uphill
+            Vector3 uphillAccel = Vector3.Project(neededAccel, uphillDir);
+            float uphillDot = Vector3.Dot(uphillAccel.normalized, uphillDir);
+
+            if (uphillAccel.magnitude > 0f && uphillDot > 0f)
+            {
+                // Compute how steep the slope is (0–1)
+                float steepnessRatio = Mathf.InverseLerp(resistStartAngle, resistFullAngle, slopeAngle);
+
+                // Reduce uphill acceleration only
+                uphillResistance = Mathf.Lerp(1f, 0f, steepnessRatio);
+
+
+                Vector3 reducedUphill = uphillAccel * uphillResistance;
+
+                reducedUphill *= gripRatio;
+                
+                Vector3 otherAccel = neededAccel - uphillAccel;
+
+                neededAccel = otherAccel + reducedUphill;
+                // Ensure total accel doesn't exceed allowed cap
+                neededAccel = Vector3.ClampMagnitude(neededAccel, maxAccel);
+            }
+        }
+
+    // --- Apply force ---
+    Vector3 forceScale = new Vector3(1, 0, 1);
+    rig.AddForce(Vector3.Scale(neededAccel * rig.mass, forceScale));
+}
 
     void ManageFriction()
     {
@@ -321,8 +509,7 @@ public class PlayerCharacter : MonoBehaviour
         if (_isJumping)
         {
             rig.AddForce(Vector3.up * jumpForce*(1-(Time.time-_jumpTime)/jumpLength));
-
-            Debug.Log(Vector3.up * jumpForce * (1 - (Time.time - _jumpTime) / jumpLength));
+            
         }
     }
     void ManageJump()
@@ -370,7 +557,8 @@ public class PlayerCharacter : MonoBehaviour
     }
 
     Rigidbody hitObject=null;
-    private void FixedUpdate()
+    
+    public override void FixedUpdateNetwork()
     {
         hitObject = null;
         ManageFriction();
