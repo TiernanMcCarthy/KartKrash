@@ -349,10 +349,12 @@ public class PlayerCharacter : Entity
             airTimeModifier = 0.5f;
         }
         
-        //Add player velocity to object beneath them
+        //Add ground velocity to player
         if (hitObject != null)
         {
-            rig.AddForce(rig.velocity * Time.fixedDeltaTime, ForceMode.Impulse);
+
+            //fixed delta time before
+            rig.AddForce(rig.velocity * Runner.DeltaTime, ForceMode.Impulse);
         }
         
         //If the player isn't moving, we don't need to calculate any new forces
@@ -393,11 +395,11 @@ public class PlayerCharacter : Entity
         
 
         Vector3 goalVel = m_UnitGoal * targetSpeed;
-        m_GoalVel = Vector3.MoveTowards(m_GoalVel, goalVel, accel * Time.fixedDeltaTime);
+        m_GoalVel = Vector3.MoveTowards(m_GoalVel, goalVel, accel * Runner.DeltaTime);
         
         
         //calculate desired acceleration and clamp that to the max acceleration
-        Vector3 neededAccel = (m_GoalVel - rig.velocity) / Time.fixedDeltaTime;
+        Vector3 neededAccel = (m_GoalVel - rig.velocity) / Runner.DeltaTime;
         neededAccel = Vector3.ClampMagnitude(neededAccel, maxAccel);
 
         
@@ -493,7 +495,7 @@ public class PlayerCharacter : Entity
         {
             velocityY=rig.velocity.y;
             velocityY = Mathf.Lerp(velocityY, targetVelocity, t);
-            t += jumpSlowDown*Time.deltaTime;
+            t += jumpSlowDown*Runner.DeltaTime;
             
             rig.velocity = new Vector3(rig.velocity.x, velocityY, rig.velocity.z);
             yield return new WaitForEndOfFrame();
