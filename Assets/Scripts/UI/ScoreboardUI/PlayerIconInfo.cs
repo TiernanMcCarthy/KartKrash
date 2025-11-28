@@ -12,7 +12,7 @@ namespace GameUI
 
         [SerializeField] private TMP_Text playerName;
 
-        [SerializeField] private TMP_Text playerScore;
+        [SerializeField] private TMP_Text playerScoreText;
 
 
         public void Setup(BasePlayer player)
@@ -23,7 +23,7 @@ namespace GameUI
         private void Update()
         {
             playerName.text = basePlayer.name;
-            playerScore.text = basePlayer.score.ToString();
+            playerScoreText.text = basePlayer.score.ToString();
         }
     }
 }

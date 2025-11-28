@@ -247,7 +247,7 @@ public class PlayerCharacter : Entity
     private Vector2 playerInputs;
     void ManagePlayerDirection()
     {
-        playerInputs = new Vector2(inputs.Generic.Right.ReadValue<float>(), inputs.Generic.Forward.ReadValue<float>());
+       // playerInputs = new Vector2(inputs.Generic.Right.ReadValue<float>(), inputs.Generic.Forward.ReadValue<float>());
 
         if (playerInputs.sqrMagnitude == 0)
             return;
@@ -562,6 +562,11 @@ public class PlayerCharacter : Entity
     
     public override void FixedUpdateNetwork()
     {
+        if (GetInput(out DriveInputData data))
+        {
+            playerInputs=new Vector2(data.xDir, data.yDir);
+            //accelerationTarget = data.accelerate+data.brake;
+        }
         hitObject = null;
         ManageFriction();
         ManageSpring();

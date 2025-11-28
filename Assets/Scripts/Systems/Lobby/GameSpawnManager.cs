@@ -43,7 +43,7 @@ namespace LobbySystem
             instance = this;
             playerInput = gameObject.AddComponent<PlayerInputManager>();
 
-            _lobby = gameObject.GetComponent<GameLobby>();
+            _lobby = FindObjectOfType<GameLobby>();
 
         }
 
@@ -101,15 +101,10 @@ namespace LobbySystem
             {
                 // Create a unique position for the player
                 Vector3 spawnPosition = new Vector3(UnityEngine.Random.Range(0, 50), 5, 0);
-
-
-
+                
                 NetworkObject networkPlayerObject =
                     runner.Spawn(_playerPrefab, spawnPosition, Quaternion.identity, player);
-
-                BasePlayer basePlayer = networkPlayerObject.GetComponent<BasePlayer>();
-
-                _lobby.AddPlayer(basePlayer);
+                
                 // Keep track of the player avatars for easy access
                 _spawnedCharacters.Add(player, networkPlayerObject);
             }

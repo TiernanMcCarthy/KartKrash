@@ -8,13 +8,23 @@ namespace LobbySystem
 {
     public class GameLobby : NetworkBehaviour
     {
-
-
-        private Dictionary<BasePlayer, NetworkObject> _spawnedCharacters = new Dictionary<BasePlayer, NetworkObject>();
+        private Dictionary<BasePlayer, NetworkObject> _spawnedCharacters {get; set;}
 
         [SerializeField] private Transform playerLobbyTransform;
 
         [SerializeField] private PlayerIconInfo playerIconPrefab;
+
+
+        public void OnLocalPlayerConnected()
+        {
+            BasePlayer[] players=FindObjectsOfType<BasePlayer>();
+
+            for (int i = 0; i < players.Length; i++)
+            {
+                _spawnedCharacters.Add(players[i], players[i].GetNetworkObject());
+                CreatePlayerEntry(players[i]);
+            }
+        }
 
         private void CreatePlayerEntry(BasePlayer player)
         {
@@ -24,7 +34,15 @@ namespace LobbySystem
 
         public void AddPlayer(BasePlayer player)
         {
-            _spawnedCharacters.Add(player, player.GetNetworkObject());
+            if (player.HasInputAuthority)
+            {
+                OnLocalPlayerConnected();
+            }
+            else
+            {
+                _spawnedCharacters.Add(player, player.GetNetworkObject());
+                CreatePlayerEntry(player);
+            }
         }
 
         public void RemovePlayer(BasePlayer player)
@@ -35,7 +53,7 @@ namespace LobbySystem
         // Start is called before the first frame update
         void Start()
         {
-
+            _spawnedCharacters = new Dictionary<BasePlayer, NetworkObject>();
         }
 
         // Update is called once per frame

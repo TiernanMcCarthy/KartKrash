@@ -27,6 +27,7 @@ public class BasePlayer : NetworkBehaviour
             GameSpawnManager.instance.AssignLocalPlayer(this);
         }
         playerRef = networkObj.InputAuthority;
+        GameSpawnManager.instance._lobby.AddPlayer(this);
     }
 
     public PlayerRef GetPlayerRef()
